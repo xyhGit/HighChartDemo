@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+	
+<!-- 指定Struts 2配置文件的根元素 -->
+<struts>
+
+	<!--解决乱码    -->
+    <constant name="struts.i18n.encoding" value="UTF-8"></constant>
+	<!-- 所有的Action定义都应该放在package下 -->
+	<constant name="struts.devMode" value="true" />
+	
+	
+	<package name="simpleton" extends="json-default">
+         
+        <action name="*JsonAction" class="jsonAction.JsonAction" method="{1}">
+            <result name="fail"></result>
+            <!-- 返回json类型数据 -->
+            <result type="json">
+                <param name="root">result<!-- result是action中设置的变量名，也是页面需要返回的数据，该变量必须有setter和getter方法 --></param>
+            </result>
+        </action>
+         
+    </package>
+  
+</struts>

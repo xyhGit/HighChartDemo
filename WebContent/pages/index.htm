@@ -1,0 +1,1408 @@
+
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>污染状况报表</title>
+
+		<script type="text/javascript" src="../jQuery/jquery-1.8.3.min.js"></script>
+		<style type="text/css">
+${demo.css}
+		</style>
+		<script type="text/javascript">
+		
+		
+/*****************折线图******************/
+		
+		$(function () {
+		    var seriesOptions = [],
+		        seriesCounter = 0,
+		        testname = ['PM2.5', 'PM10', '其它'],
+		        names = ['MSFT', 'AAPL', 'GOOG'],
+		        // create the chart when all data is loaded
+		        createChart = function () {
+
+		            $('#container1').highcharts('StockChart', {
+
+		                rangeSelector: {
+		                    selected: 4
+		                },
+		                credits:{
+		                	enabled: false
+		                },
+		                title: {
+		                    text: '北京市污染物含量趋势图'
+		                },
+		                xAxis: {
+		                	/*
+		                    labels: {
+		                        rotation : -50,//旋转-50度，解决SVG字太拥挤的问题
+		                        y : 50
+		                    },
+		                    */
+		                    dateTimeLabelFormats: {
+		                        millisecond: '%Y-%m-%d %H:%M:%S',
+		                        second: '%Y-%m-%d %H:%M:%S',
+		                        minute: '%Y-%m-%d %H:%M',
+		                        hour: '%Y-%m-%d %H:%M',
+		                        day: '%Y-%m-%d',
+		                        week: '%Y-%m-%d',
+		                        month: '%Y-%m',
+		                        year: '%Y'
+		                    }
+		                },
+		                
+		                yAxis: {
+		                    labels: {
+		                        formatter: function () {
+		                            //return (this.value > 0 ? ' + ' : '') + this.value + '%';
+		                            return this.value;
+		                        }
+		                    },
+		                    plotLines: [{
+		                        value: 0,
+		                        color: 'green',
+		                        dashStyle : 'shortdash',
+		                        width: 2,
+		                        //color: 'silver'
+		                        label:{
+		                        	text:'良好'
+		                        }
+		                    },
+		                    {
+		                        value: 60,
+		                        color: 'red',
+		                        dashStyle : 'shortdash',
+		                        width: 2,
+		                        //color: 'silver'
+		                        label:{
+		                        	text:'严重污染'
+		                        }
+		                    }
+		                    ]
+		                },
+
+		                plotOptions: {
+		                    series: {
+		                        compare: 'percent'
+		                    }
+		                },
+
+		                tooltip: {
+		                    pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> <br/>',
+		                    valueDecimals: 2
+		                },
+						
+						scrollbar:{
+							enable : false
+						},
+		                
+		                spline: {
+		                	enable : true
+		                },
+		                
+		                series: seriesOptions
+		            });
+		        };
+
+		    $.each(names, function (i, name) {
+
+		        $.getJSON('http://www.highcharts.com/samples/data/jsonp.php?filename=' 
+		        			+ name.toLowerCase() 
+		        			+ '-c.json&callback=?',    
+		        			function (data) {
+
+					            seriesOptions[i] = {
+					                name: testname[i],
+					                data: data
+					            };
+
+		            // As we're loading the data asynchronously, we don't know what order it will arrive. So
+		            // we keep a counter and create the chart when all the data is loaded.
+		            seriesCounter += 1;
+
+		            if (seriesCounter === names.length) {
+		                createChart();
+		            }
+		        });
+		    });
+		});
+		
+		
+/*****************直方图******************/
+		
+		$(function () {
+		    $('#container2').highcharts({
+		        chart: {
+		            type: 'column'
+		        },
+		        credits:{
+                	enabled: false
+                },
+		        title: {
+		            text: '各城市污染情况对比'
+		        },
+		        subtitle: {
+		            //text: '来源: WorldClimate.com'
+		        },
+		        xAxis: {
+		            
+		            dateTimeLabelFormats: {
+		                millisecond: '%Y-%m-%d %H:%M:%S',
+		                second: '%Y-%m-%d %H:%M:%S',
+		                minute: '%Y-%m-%d %H:%M',
+		                hour: '%Y-%m-%d %H:%M',
+		                day: '%Y-%m-%d',
+		                week: '%Y-%m-%d',
+		                month: '%Y-%m',
+		                year: '%Y'
+		            }
+		        },
+		        yAxis: {
+		            min: 0,
+		            title: {
+		                text: 'Rainfall (mm)'
+		            },
+			        plotLines: [{
+			            value: 20,
+			            color: 'green',
+			            width: 2,
+			            //color: 'silver'
+			            label:{
+			            	text:'良好'
+			            }
+			        },
+			        {
+			            value: 100,
+			            color: 'red',
+			            width: 2,
+			            //color: 'silver'
+			            label:{
+			            	text:'严重污染'
+			            }
+			        }
+		        ]
+		        },
+		        tooltip: {
+		            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+		            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+		                '<td style="padding:0"><b>{point.y:.1f} </b></td></tr>',
+		            footerFormat: '</table>',
+		            shared: true,
+		            useHTML: true
+		        },
+		        plotOptions: {
+		            column: {
+		                pointPadding: 0.2,
+		                borderWidth: 0
+		            }
+		        },
+		        series: [{
+		            name: '北京',
+		            data: [49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4]
+
+		        }, {
+		            name: '上海',
+		            data: [83.6, 78.8, 98.5, 93.4, 106.0, 84.5, 105.0, 104.3, 91.2, 83.5, 106.6, 92.3]
+
+		        }, {
+		            name: '广州',
+		            data: [48.9, 38.8, 39.3, 41.4, 47.0, 48.3, 59.0, 59.6, 52.4, 65.2, 59.3, 51.2]
+
+		        }, {
+		            name: '深圳',
+		            data: [42.4, 33.2, 34.5, 39.7, 52.6, 75.5, 57.4, 60.4, 47.6, 39.1, 46.8, 51.1]
+
+		        }]
+		    });
+		});
+		
+		
+/*****************饼状图******************/
+ 
+		$(function () {
+		    $('#container3').highcharts({
+		        chart: {
+		            plotBackgroundColor: null,
+		            plotBorderWidth: null,
+		            plotShadow: false
+		        },
+		        credits:{
+                	enabled: false
+                },
+		        title: {
+		            text: '主要污染物含量'
+		        },
+		        tooltip: {
+		    	    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+		        },
+		        plotOptions: {
+		            pie: {
+		                allowPointSelect: true,
+		                cursor: 'pointer',
+		                dataLabels: {
+		                    enabled: true,
+		                    color: '#000000',
+		                    connectorColor: '#000000',
+		                    format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+		                }
+		            }
+		        },
+		        series: [{
+		            type: 'pie',
+		            name: '含量',
+		            data: [
+		                
+		                ['PM10',       26.8],
+		                ['其它',		100-45-26.8],
+		                {
+		                    name: 'PM2.5',
+		                    y: 12.8,
+		                    sliced: true,
+		                    selected: true
+		                }
+		            ]
+		        }]
+		    });
+		});	
+		
+		
+/*****************面积图******************/
+		
+		
+		$(function () {
+		    $('#container4').highcharts({
+		        chart: {
+		            type: 'area'
+		        },
+		        credits:{
+                	enabled: false
+                },
+		        title: {
+		            text: '各时期污染物含量'
+		        },
+		        /*
+		        subtitle: {
+		            text: 'Source: Wikipedia.org'
+		        },
+		        */
+		        xAxis: {
+		            categories: ['1月', '2月', '3月', '4月', '5月', '6月', '7月',
+		                         '8月', '9月', '10月', '11月', '12月'],
+		            tickmarkPlacement: 'on',
+		            title: {
+		                enabled: false
+		            }
+		        },
+		        yAxis: {
+		            title: {
+		                text: 'Percent'
+		            }
+		        },
+		        tooltip: {
+		            pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.percentage:.1f}%</b> ({point.y:,.0f} millions)<br/>',
+		            shared: true
+		        },
+		        plotOptions: {
+		            area: {
+		                stacking: 'percent',
+		                lineColor: '#ffffff',
+		                lineWidth: 1,
+		                marker: {
+		                    lineWidth: 1,
+		                    lineColor: '#ffffff'
+		                }
+		            }
+		        },
+		        series: [{
+		            name: 'PM2.5',
+		            data: [502, 635, 809, 947, 1402, 3634, 5268]
+		        }, {
+		            name: 'PM10',
+		            data: [106, 107, 111, 133, 221, 767, 1766]
+		        }, {
+		            name: 'else',
+		            data: [163, 203, 276, 408, 547, 729, 628]
+		        }]
+		    });
+		});		
+		
+/*****************仪表盘******************/
+
+		$(function () {
+			
+		    $('#container5').highcharts({
+			
+			    chart: {
+			        type: 'gauge',
+			        plotBackgroundColor: null,
+			        plotBackgroundImage: null,
+			        plotBorderWidth: 0,
+			        plotShadow: false
+			    },
+			    credits:{
+                	enabled: false
+                },
+			    title: {
+			        text: '实时空气质量指数'
+			    },
+			    
+			    pane: {
+			        startAngle: -120,
+			        endAngle: 120,
+			        background: [{
+			            backgroundColor: {
+			                linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+			                stops: [
+			                    [0, '#FFF'],
+			                    [1, '#333']
+			                ]
+			            },
+			            borderWidth: 0,
+			            outerRadius: '109%'
+			        }, {
+			            backgroundColor: {
+			                linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+			                stops: [
+			                    [0, '#333'],
+			                    [1, '#FFF']
+			                ]
+			            },
+			            borderWidth: 1,
+			            outerRadius: '107%'
+			        }, {
+			            // default background
+			        }, {
+			            backgroundColor: '#DDD',
+			            borderWidth: 0,
+			            outerRadius: '105%',
+			            innerRadius: '103%'
+			        }]
+			    },
+			       
+			    // the value axis
+			    yAxis: {
+			        min: 0,
+			        max: 200,
+			        
+			        minorTickInterval: 'auto',
+			        minorTickWidth: 1,
+			        minorTickLength: 10,
+			        minorTickPosition: 'inside',
+			        minorTickColor: '#666',
+			
+			        tickPixelInterval: 30,
+			        tickWidth: 2,
+			        tickPosition: 'inside',
+			        tickLength: 10,
+			        tickColor: '#666',
+			        labels: {
+			            step: 2,
+			            rotation: 'auto'
+			        },
+			        title: {
+			            text: 'mg/m3'
+			        },
+			        plotBands: [{
+			            from: 0,
+			            to: 100,
+			            color: '#55BF3B' // green
+			        }, {
+			            from: 100,
+			            to: 160,
+			            color: '#DDDF0D' // yellow
+			        }, {
+			            from: 160,
+			            to: 200,
+			            color: '#DF5353' // red
+			        }]        
+			    },
+			
+			    series: [{
+			        name: '实时污染指数',
+			        data: [86],
+			        tooltip: {
+			            valueSuffix: ' mg/m3'
+			        }
+			    }]
+			
+			}, 
+			// Add some life
+			function (chart) {
+				if (!chart.renderer.forExport) {
+				    setInterval(function () {
+				        var point = chart.series[0].points[0],
+				            newVal,
+				            inc = Math.round((Math.random() - 0.5) * 20);
+				        
+				        newVal = point.y + inc;
+				        if (newVal < 0 || newVal > 200) {
+				            newVal = point.y - inc;
+				        }
+				        
+				        point.update(newVal);
+				        
+				    }, 3000);
+				}
+			});
+		});	
+		
+		
+		/****************仪表图**********************/
+		
+		$(function () {
+
+    var gaugeOptions = {
+
+        chart: {
+            type: 'solidgauge'
+        },
+
+        title: null,
+
+        pane: {
+            center: ['50%', '85%'],
+            size: '140%',
+            startAngle: -90,
+            endAngle: 90,
+            background: {
+                backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || '#EEE',
+                innerRadius: '60%',
+                outerRadius: '100%',
+                shape: 'arc'
+            }
+        },
+
+        tooltip: {
+            enabled: false
+        },
+
+        // the value axis
+        yAxis: {
+            stops: [
+                [0.1, '#55BF3B'], // green
+                [0.5, '#DDDF0D'], // yellow
+                [0.9, '#DF5353'] // red
+            ],
+            lineWidth: 0,
+            minorTickInterval: null,
+            tickPixelInterval: 400,
+            tickWidth: 0,
+            title: {
+                y: -70
+            },
+            labels: {
+                y: 16
+            }
+        },
+
+        plotOptions: {
+            solidgauge: {
+                dataLabels: {
+                    y: 5,
+                    borderWidth: 0,
+                    useHTML: true
+                }
+            }
+        }
+    };
+
+    // The speed gauge
+    $('#container-speed').highcharts(Highcharts.merge(gaugeOptions, {
+        yAxis: {
+            min: 0,
+            max: 200,
+            title: {
+                text: '实时PM2.5含量'
+            }
+        },
+
+        credits: {
+            enabled: false
+        },
+
+        series: [{
+            name: 'PM2.5',
+            data: [80],
+            dataLabels: {
+                format: '<div style="text-align:center"><span style="font-size:25px;color:' +
+                    ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' +
+                       '<span style="font-size:12px;color:silver">mg/m3</span></div>'
+            },
+            tooltip: {
+                valueSuffix: ' mg/m3'
+            }
+        }]
+
+    }));
+
+    // The RPM gauge
+    $('#container-rpm').highcharts(Highcharts.merge(gaugeOptions, {
+        yAxis: {
+            min: 0,
+            max: 5,
+            title: {
+                text: '实时PM10含量'
+            }
+        },
+
+        series: [{
+            name: 'PM10',
+            data: [1],
+            dataLabels: {
+                format: '<div style="text-align:center"><span style="font-size:25px;color:' +
+                    ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y:.1f}</span><br/>' +
+                       '<span style="font-size:12px;color:silver">mg/m3</span></div>'
+            },
+            tooltip: {
+                valueSuffix: ' mg/m3'
+            }
+        }]
+
+    }));
+
+    // Bring life to the dials
+    setInterval(function () {
+        // Speed
+        var chart = $('#container-speed').highcharts(),
+            point,
+            newVal,
+            inc;
+
+        if (chart) {
+            point = chart.series[0].points[0];
+            inc = Math.round((Math.random() - 0.5) * 100);
+            newVal = point.y + inc;
+
+            if (newVal < 0 || newVal > 200) {
+                newVal = point.y - inc;
+            }
+
+            point.update(newVal);
+        }
+
+        // RPM
+        chart = $('#container-rpm').highcharts();
+        if (chart) {
+            point = chart.series[0].points[0];
+            inc = Math.random() - 0.5;
+            newVal = point.y + inc;
+
+            if (newVal < 0 || newVal > 5) {
+                newVal = point.y - inc;
+            }
+
+            point.update(newVal);
+        }
+    }, 2000);
+
+
+});
+		
+		
+		
+/*****************混合图******************/
+		
+		$(function () {                                                               
+		    $('#container6').highcharts({                                          
+		        chart: {                                                          
+		        },      
+		        credits:{
+                	enabled: false
+                },
+		        title: {                                                          
+		            text: '综合视图'                                     
+		        },                                                                
+		        xAxis: {                                                          
+		            categories: ['北京', '上海', '广州', '深圳', '台湾']
+		        },                                                                
+		        tooltip: {                                                        
+		            formatter: function() {                                       
+		                var s;                                                    
+		                if (this.point.name) { // the pie chart                   
+		                    s = ''+                                               
+		                        this.point.name +': '+ this.y +' %';         
+		                } else {                                                  
+		                    s = ''+                                               
+		                        this.x  +': '+ this.y;                            
+		                }                                                         
+		                return s;                                                 
+		            }                                                             
+		        },                                                                
+		        labels: {                                                         
+		            items: [{                                                     
+		                html: '污染物含量',                          
+		                style: {                                                  
+		                    left: '110px',                                         
+		                    top: '8px',                                           
+		                    color: 'black'                                        
+		                }                                                         
+		            }]                                                            
+		        },                                                                
+		        series: [{                                                        
+		            type: 'column',                                               
+		            name: '北京',                                                 
+		            data: [83, 92, 71, 73, 84]                                         
+		        }, {                                                              
+		            type: 'column',                                               
+		            name: '上海',                                                 
+		            data: [72, 83, 85, 87, 96]                                         
+		        }, {                                                              
+		            type: 'column',                                               
+		            name: '广州',                                                  
+		            data: [84, 83, 93, 89, 91]                                         
+		        }, {                                                              
+		            type: 'column',                                               
+		            name: '深圳',                                                  
+		            data: [73, 85, 86, 78, 92]                                         
+		        }, {                                                              
+		            type: 'spline',                                               
+		            name: '平均',                                              
+		            data: [79, 83, 86, 81, 91],                               
+		            marker: {                                                     
+		            	lineWidth: 2,                                               
+		            	lineColor: Highcharts.getOptions().colors[3],               
+		            	fillColor: 'white'                                          
+		            }                                                             
+		        }, {                                                              
+		            type: 'pie',                                                  
+		            name: 'Total consumption',                                    
+		            data: [{                                                      
+		                name: 'PM2.5',                                             
+		                y: 13,                                                    
+		                color: Highcharts.getOptions().colors[0] // Jane's color  
+		            }, {                                                          
+		                name: 'PM10',                                             
+		                y: 23,                                                    
+		                color: Highcharts.getOptions().colors[1] // John's color  
+		            }, {                                                          
+		                name: 'else',                                              
+		                y: 100-13-23,                                                    
+		                color: Highcharts.getOptions().colors[2] // Joe's color   
+		            }],                                                           
+		            center: [30, 0],                                            
+		            size: 100,                                                    
+		            showInLegend: false,                                          
+		            dataLabels: {                                                 
+		                enabled: false                                            
+		            }                                                             
+		        }]                                                                
+		    });                                                                   
+		});
+		
+		
+/*****************直方图-可向下钻取******************/
+		
+		
+		$(function () {
+		    // Create the chart
+		    $('#container7').highcharts({
+		        chart: {
+		            type: 'column'
+		        },
+		        title: {
+		            text: '2015年各地污染含量对比-可向下钻取'
+		        },
+		        subtitle: {
+		            text: '点击柱状图查看详情'
+		        },
+		        xAxis: {
+		            type: 'category'
+		        },
+		        yAxis: {
+		            title: {
+		                text: '污染物含量'
+		            }
+
+		        },
+		        legend: {
+		            enabled: false
+		        },
+		        plotOptions: {
+		            series: {
+		                borderWidth: 0,
+		                dataLabels: {
+		                    enabled: true,
+		                    format: '{point.y:.1f}'
+		                }
+		            }
+		        },
+
+		        tooltip: {
+		        //    headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+		            pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.2f}</b><br/>'
+		        },
+
+		        series: [{
+		            name: "城市",
+		            colorByPoint: true,
+		            data: [{
+		                name: "北京",
+		                y: 76.33,
+		                drilldown: "北京"
+		            }, {
+		                name: "上海",
+		                y: 64.030000000000005,
+		                drilldown: "上海"
+		            }, {
+		                name: "广州",
+		                y: 80.38,
+		                drilldown: "广州"
+		            }, {
+		                name: "深圳",
+		                y: 91.77,
+		                drilldown: "深圳"
+		            }, {
+		                name: "台湾",
+		                y: 80.9100000000000001,
+		                drilldown: "台湾"
+		            }]
+		        }],
+		        drilldown: {
+		            series: [{
+		                name: "北京",
+		                id: "北京",
+		                data: [
+		                [
+		                "1月",
+		                74.13],
+		                [
+		                "2月",
+		                77.2],
+		                [
+		                "3月",
+		                80.11],
+		                [
+		                "4月",
+		                85.33],
+		                [
+		                "5月",
+		                81.06],
+		                [
+		                "6月",
+		                90.5]
+		            ]}, {
+		                name: "上海",
+		                id: "上海",
+		                data: [
+		                [
+		                "1月",
+		                75],
+		                [
+		                "2月",
+		                84.32],
+		                [
+		                "3月",
+		                83.68],
+		                [
+		                "4月",
+		                92.96],
+		                [
+		                "5月",
+		                92.53],
+		                [
+		                "6月",
+		                91.45]
+		            ]}, {
+		                name: "广州",
+		                id: "广州",
+		                data: [
+		                [
+		                "1月",
+		                82.76],
+		                [
+		                "2月",
+		                72.32],
+		                [
+		                "3月",
+		                92.31],
+		                [
+		                "4月",
+		                91.27],
+		                [
+		                "5月",
+		                87.02],
+		                [
+		                "6月",
+		                80.33]
+		            ]}, {
+		                name: "深圳",
+		                id: "深圳",
+		                data: [
+		                [
+		                "1月",
+		                82.56],
+		                [
+		                "2月",
+		                80.77],
+		                [
+		                "3月",
+		                80.42],
+		                [
+		                "4月",
+		                85.3],
+		                [
+		                "5月",
+		                90.29],
+		                [
+		                "6月",
+		                87.26]
+		            ]}, {
+		                name: "台湾",
+		                id: "台湾",
+		                data: [
+		                [
+		                "1月",
+		                70.34],
+		                [
+		                "2月",
+		                73.24],
+		                [
+		                "3月",
+		                71.17],
+		                [
+		                "4月",
+		                68.16],
+		                [
+		                "5月",
+		                70.22],
+		                [
+		                "6月",
+		                67.15]
+		            ]}]
+		        }
+		    });
+		});
+
+		
+		/*****************饼状图-可向下钻取******************/
+
+		
+		$(function () {
+		    // Create the chart
+		    $('#container8').highcharts({
+		        chart: {
+		            type: 'pie'
+		        },
+		        title: {
+		            text: '污染物成分-可向下钻取'
+		        },
+		        subtitle: {
+		            text: '点击图片查看详细信息'
+		        },
+		        plotOptions: {
+		            series: {
+		                dataLabels: {
+		                    enabled: true,
+		                    format: '{point.name}: {point.y:.1f}%'
+		                }
+		            }
+		        },
+
+		        tooltip: {
+		            headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+		            pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.2f}%</b> of total<br/>'
+		        },
+		        series: [{
+		            name: "污染物成份",
+		            colorByPoint: true,
+		            data: [{
+		                name: "PM2.5",
+		                y: 56.33,
+		                drilldown: "PM2.5"
+		            }, {
+		                name: "PM10",
+		                y: 24.030000000000005,
+		                drilldown: "PM10"
+		            }, {
+		                name: "else",
+		                y: 10.38,
+		                drilldown: "else"
+		            }]
+		        }],
+		        drilldown: {
+		            series: [{
+		                name: "PM2.5",
+		                id: "PM2.5",
+		                data: [
+		                    ["A", 24.13],
+		                    ["B", 17.2],
+		                    ["C", 8.11],
+		                    ["D", 5.33],
+		                    ["E", 1.06],
+		                    ["F", 0.5]
+		                ]
+		            }, {
+		                name: "PM10",
+		                id: "PM10",
+		                data: [
+		                    ["A", 5],
+		                    ["B", 4.32],
+		                    ["C", 3.68],
+		                    ["D", 2.96],
+		                    ["E", 2.53],
+		                    ["F", 1.45]
+		                ]
+		            }, {
+		                name: "else",
+		                id: "else",
+		                data: [
+		                    ["A", 2.76],
+		                    ["B", 2.32],
+		                    ["C", 2.31],
+		                    ["D", 1.27],
+		                    ["E", 1.02],
+		                    ["F", 0.33]
+		                ]
+		            }]
+		        }
+		    });
+		});
+		
+		
+		/**********************分层****************/
+		$(function () {
+    $('#container9').highcharts({
+
+        chart: {
+            type: 'column',
+            options3d: {
+                enabled: true,
+                alpha: 15,
+                beta: 15,
+                viewDistance: 25,
+                depth: 40
+            },
+            marginTop: 80,
+            marginRight: 40
+        },
+
+        title: {
+            text: '分层'
+        },
+
+        xAxis: {
+            categories: ['北京', '上海', '广州', '深圳', '台湾']
+        },
+
+        yAxis: {
+            allowDecimals: false,
+            min: 0,
+            title: {
+                text: '污染物含量'
+            }
+        },
+
+        tooltip: {
+            headerFormat: '<b>{point.key}</b><br>',
+            pointFormat: '<span style="color:{series.color}">\u25CF</span> {series.name}: {point.y} / {point.stackTotal}'
+        },
+
+        plotOptions: {
+            column: {
+                stacking: 'normal',
+                depth: 40
+            }
+        },
+
+        series: [{
+            name: 'A',
+            data: [5, 3, 4, 7, 2],
+            stack: 'male'
+        }, {
+            name: 'B',
+            data: [3, 4, 4, 2, 5],
+            stack: 'male'
+        }, {
+            name: 'C',
+            data: [2, 5, 6, 2, 1],
+            stack: 'female'
+        }, {
+            name: 'D',
+            data: [3, 0, 4, 4, 3],
+            stack: 'female'
+        }]
+    });
+});
+
+		
+		/***************瀑布图****************/
+		
+		$(function () {
+    $('#container10').highcharts({
+        chart: {
+            type: 'waterfall'
+        },
+
+        title: {
+            text: '瀑布图'
+        },
+
+        xAxis: {
+            type: 'category'
+        },
+
+        yAxis: {
+            title: {
+                text: ''
+            }
+        },
+
+        legend: {
+            enabled: false
+        },
+
+        tooltip: {
+            pointFormat: '<b>${point.y:,.2f}</b>'
+        },
+
+        series: [{
+            upColor: Highcharts.getOptions().colors[2],
+            color: Highcharts.getOptions().colors[3],
+            data: [{
+                name: 'Start',
+                y: 120000
+            }, {
+                name: 'Product Revenue',
+                y: 569000
+            }, {
+                name: 'Service Revenue',
+                y: 231000
+            }, {
+                name: 'Positive Balance',
+                isIntermediateSum: true,
+                color: Highcharts.getOptions().colors[1]
+            }, {
+                name: 'Fixed Costs',
+                y: -342000
+            }, {
+                name: 'Variable Costs',
+                y: -233000
+            }, {
+                name: 'Balance',
+                isSum: true,
+                color: Highcharts.getOptions().colors[1]
+            }],
+            dataLabels: {
+                enabled: true,
+                formatter: function () {
+                    return Highcharts.numberFormat(this.y / 1000, 0, ',');
+                },
+                style: {
+                    color: '#FFFFFF',
+                    fontWeight: 'bold',
+                    textShadow: '0px 0px 3px black'
+                }
+            },
+            pointPadding: 0
+        }]
+    });
+});
+		
+		/*************箱线图****************/
+		
+		$(function () {
+    $('#container11').highcharts({
+       
+chart: {
+            type: 'boxplot'
+        },
+
+        title: {
+            text: '箱线图'
+        },
+
+        legend: {
+            enabled: false
+        },
+
+        xAxis: {
+            categories: ['1', '2', '3', '4', '5'],
+            title: {
+                text: ''
+            }
+        },
+
+        yAxis: {
+            title: {
+                text: ''
+            },
+            plotLines: [{
+                value: 932,
+                color: 'red',
+                width: 1,
+                label: {
+                    text: 'Theoretical mean: 932',
+                    align: 'center',
+                    style: {
+                        color: 'gray'
+                    }
+                }
+            }]
+        },
+
+        series: [{
+            name: 'Observations',
+            data: [
+                [760, 801, 848, 895, 965],
+                [733, 853, 939, 980, 1080],
+                [714, 762, 817, 870, 918],
+                [724, 802, 806, 871, 950],
+                [834, 836, 864, 882, 910]
+            ],
+            tooltip: {
+                headerFormat: '<em>Experiment No {point.key}</em><br/>'
+            }
+        }, {
+            name: 'Outlier',
+            color: Highcharts.getOptions().colors[0],
+            type: 'scatter',
+            data: [ // x, y positions where 0 is the first category
+                [0, 644],
+                [4, 718],
+                [4, 951],
+                [4, 969]
+            ],
+            marker: {
+                fillColor: 'white',
+                lineWidth: 1,
+                lineColor: Highcharts.getOptions().colors[0]
+            },
+            tooltip: {
+                pointFormat: 'Observation: {point.y}'
+            }
+        }]
+
+    });
+});
+
+		/*************金字塔*****************/
+		$(function () {
+
+    $('#container12').highcharts({
+        chart: {
+            type: 'pyramid',
+            marginRight: 100
+        },
+        title: {
+            text: '金字塔图',
+            x: -50
+        },
+        plotOptions: {
+            series: {
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b> ({point.y:,.0f})',
+                    color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black',
+                    softConnector: true
+                }
+            }
+        },
+        legend: {
+            enabled: false
+        },
+        series: [{
+            name: '',
+            data: [
+                ['A',   15654],
+                ['B',       4064],
+                ['C', 1987],
+                ['D',    976],
+                ['E',    846]
+            ]
+        }]
+    });
+});
+		
+		/*************漏斗*****************/
+		$(function () {
+
+    $('#container13').highcharts({
+        chart: {
+            type: 'funnel',
+            marginRight: 100
+        },
+        title: {
+            text: '漏斗图',
+            x: -50
+        },
+        plotOptions: {
+            series: {
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b> ({point.y:,.0f})',
+                    color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black',
+                    softConnector: true
+                },
+                neckWidth: '30%',
+                neckHeight: '25%'
+
+                //-- Other available options
+                // height: pixels or percent
+                // width: pixels or percent
+            }
+        },
+        legend: {
+            enabled: false
+        },
+        series: [{
+            name: 'Unique users',
+            data: [
+                ['A',   15654],
+                ['B',       4064],
+                ['C', 1987],
+                ['D',    976],
+                ['E',    846]
+            ]
+        }]
+    });
+});
+		
+		/************散点图****************/
+		
+		$(function () {
+
+    // Give the points a 3D feel by adding a radial gradient
+    Highcharts.getOptions().colors = $.map(Highcharts.getOptions().colors, function (color) {
+        return {
+            radialGradient: {
+                cx: 0.4,
+                cy: 0.3,
+                r: 0.5
+            },
+            stops: [
+                [0, color],
+                [1, Highcharts.Color(color).brighten(-0.2).get('rgb')]
+            ]
+        };
+    });
+
+    // Set up the chart
+    var chart = new Highcharts.Chart({
+        chart: {
+            renderTo: 'container14',
+            margin: 100,
+            type: 'scatter',
+            options3d: {
+                enabled: true,
+                alpha: 10,
+                beta: 30,
+                depth: 250,
+                viewDistance: 5,
+
+                frame: {
+                    bottom: { size: 1, color: 'rgba(0,0,0,0.02)' },
+                    back: { size: 1, color: 'rgba(0,0,0,0.04)' },
+                    side: { size: 1, color: 'rgba(0,0,0,0.06)' }
+                }
+            }
+        },
+        title: {
+            text: '散点图'
+        },
+        subtitle: {
+            text: ''
+        },
+        plotOptions: {
+            scatter: {
+                width: 10,
+                height: 10,
+                depth: 10
+            }
+        },
+        yAxis: {
+            min: 0,
+            max: 10,
+            title: null
+        },
+        xAxis: {
+            min: 0,
+            max: 10,
+            gridLineWidth: 1
+        },
+        zAxis: {
+            min: 0,
+            max: 10
+        },
+        legend: {
+            enabled: false
+        },
+        series: [{
+            name: 'Reading',
+            colorByPoint: true,
+            data: [[1, 6, 5], [8, 7, 9], [1, 3, 4], [4, 6, 8], [5, 7, 7], [6, 9, 6], [7, 0, 5], [2, 3, 3], [3, 9, 8], [3, 6, 5], [4, 9, 4], [2, 3, 3], [6, 9, 9], [0, 7, 0], [7, 7, 9], [7, 2, 9], [0, 6, 2], [4, 6, 7], [3, 7, 7], [0, 1, 7], [2, 8, 6], [2, 3, 7], [6, 4, 8], [3, 5, 9], [7, 9, 5], [3, 1, 7], [4, 4, 2], [3, 6, 2], [3, 1, 6], [6, 8, 5], [6, 6, 7], [4, 1, 1], [7, 2, 7], [7, 7, 0], [8, 8, 9], [9, 4, 1], [8, 3, 4], [9, 8, 9], [3, 5, 3], [0, 2, 4], [6, 0, 2], [2, 1, 3], [5, 8, 9], [2, 1, 1], [9, 7, 6], [3, 0, 2], [9, 9, 0], [3, 4, 8], [2, 6, 1], [8, 9, 2], [7, 6, 5], [6, 3, 1], [9, 3, 1], [8, 9, 3], [9, 1, 0], [3, 8, 7], [8, 0, 0], [4, 9, 7], [8, 6, 2], [4, 3, 0], [2, 3, 5], [9, 1, 4], [1, 1, 4], [6, 0, 2], [6, 1, 6], [3, 8, 8], [8, 8, 7], [5, 5, 0], [3, 9, 6], [5, 4, 3], [6, 8, 3], [0, 1, 5], [6, 7, 3], [8, 3, 2], [3, 8, 3], [2, 1, 6], [4, 6, 7], [8, 9, 9], [5, 4, 2], [6, 1, 3], [6, 9, 5], [4, 8, 2], [9, 7, 4], [5, 4, 2], [9, 6, 1], [2, 7, 3], [4, 5, 4], [6, 8, 1], [3, 4, 0], [2, 2, 6], [5, 1, 2], [9, 9, 7], [6, 9, 9], [8, 4, 3], [4, 1, 7], [6, 2, 5], [0, 4, 9], [3, 5, 9], [6, 9, 1], [1, 9, 2]]
+        }]
+    });
+
+
+    // Add mouse events for rotation
+    $(chart.container).bind('mousedown.hc touchstart.hc', function (e) {
+        e = chart.pointer.normalize(e);
+
+        var posX = e.pageX,
+            posY = e.pageY,
+            alpha = chart.options.chart.options3d.alpha,
+            beta = chart.options.chart.options3d.beta,
+            newAlpha,
+            newBeta,
+            sensitivity = 5; // lower is more sensitive
+
+        $(document).bind({
+            'mousemove.hc touchdrag.hc': function (e) {
+                // Run beta
+                newBeta = beta + (posX - e.pageX) / sensitivity;
+                newBeta = Math.min(100, Math.max(-100, newBeta));
+                chart.options.chart.options3d.beta = newBeta;
+
+                // Run alpha
+                newAlpha = alpha + (e.pageY - posY) / sensitivity;
+                newAlpha = Math.min(100, Math.max(-100, newAlpha));
+                chart.options.chart.options3d.alpha = newAlpha;
+
+                chart.redraw(false);
+            },
+            'mouseup touchend': function () {
+                $(document).unbind('.hc');
+            }
+        });
+    });
+
+});
+		
+
+		
+		</script>	
+		
+	</head>
+	<body>
+<script src="../js/highstock.js"></script>
+<script src="../js/exporting.js"></script>
+<script src="../js/highcharts-more.js"></script>
+<script src="../js/highcharts-3d.js"></script>
+<script src="../js/solid-gauge.js"></script>
+<script src="../js/data.js"></script>
+<script src="../js/drilldown.js"></script>
+<script src="../js/funnel.js"></script>
+
+<br/><br/>
+<div id="container1" style="height: 400px; width: 1000px; margin: 0 auto"></div><br/><br/>
+<div id="container2" style="height: 400px; width: 1000px; margin: 0 auto"></div><br/><br/>
+<div id="container3" style="height: 400px; width: 1000px; margin: 0 auto"></div><br/><br/>
+<div id="container4" style="height: 400px; width: 1000px; margin: 0 auto"></div><br/><br/>
+<div id="container5" style="height: 400px; width: 1000px; margin: 0 auto"></div><br/><br/>
+<div style="height: 400px; width: 1000px; margin: 0 auto">
+	<div id="container-speed" style="height: 200px; width: 300px; float: left"></div>
+	<div id="container-rpm" style="height: 200px; width: 300px; float: right"></div>
+</div><br/><br/>
+<div id="container6" style="height: 400px; width: 1000px; margin: 0 auto"></div><br/><br/>
+<div id="container7" style="height: 400px; width: 1000px; margin: 0 auto"></div><br/><br/>
+<div id="container8" style="height: 400px; width: 1000px; margin: 0 auto"></div><br/><br/>
+<div id="container9" style="height: 400px; width: 1000px; margin: 0 auto"></div><br/><br/>
+<div id="container10" style="height: 400px; width: 1000px; margin: 0 auto"></div><br/><br/>
+<div id="container11" style="height: 400px; width: 1000px; margin: 0 auto"></div><br/><br/>
+<div id="container12" style="height: 400px; width: 600px; margin: 0 auto"></div><br/><br/>
+<div id="container13" style="height: 400px; width: 600px; margin: 0 auto"></div><br/><br/>
+<div id="container14" style="height: 400px; width: 1000px; margin: 0 auto"></div><br/><br/>
+	
+	</body>
+</html>

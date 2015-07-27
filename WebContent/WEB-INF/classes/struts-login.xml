@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+	
+<!-- 指定Struts 2配置文件的根元素 -->
+<struts>
+
+	<!-- 所有的Action定义都应该放在package下 -->
+	<package name="action" extends="struts-default">
+		<action name="login" class="action.LoginAction" method="test">
+			<!-- 定义三个逻辑视图和物理资源之间的映射 -->		
+			<result name="input">/testPages/login.jsp</result>
+			<result name="error">/testPages/error.jsp</result>
+			<result name="success">/testPages/welcome.jsp</result>
+		</action>
+	</package>
+	
+</struts>
